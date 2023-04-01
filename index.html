@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-selection, .select2-selection__arrow{
+            height: 58px !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 1rem !important;
+            font-weight: 500;
+            border-color: #dee2e6!important;
+            padding-left: 0.25rem;
+        }
+        .card-header{
+            border-top-left-radius: 1rem !important;
+            border-top-right-radius: 1rem !important;
+        }
+    </style>
+</head>
+<body class="p-5 bg-secondary bg-opacity-75">
+    <div class="card shadow-lg col-lg-8 m-auto bg-light-subtle rounded-4">
+        <div class="card-header p-3 text-white bg-primary bg-opacity-75">
+            <h4 class="card-title">Interface de conversion</h4>
+        </div>
+        <div class="card-body p-5 pb-0">
+            <form id="form-converter">
+                <div class="row gx-5">
+                    <div class="col-lg-6 border-end">
+                        <h5 class="mb-3 text-primary">Entrée</h5>
+                        <div class="form-group mb-3">
+                            <div class="form-floating">
+                                <input type="number" min="1" required class="form-control" id="input" placeholder="Valeur à convertir">
+                                <label class="text-primary" for="input">Valeur à convertir</label>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <div class="form-floating">
+                                <select required name="" id="conversion-type" class="form-select">
+                                    <!-- <option value=""> Type de conversion </option> -->
+                                </select>
+                                <label class="text-primary" for="conversion-type">Type de conversion</label>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <!-- <div class="form-floating"> -->
+                                <select required name="" id="input-unit" class="form-select options">
+                                    <option value=""> Unité de conversion </option>
+                                </select>
+                                <!-- <label class="text-primary" for="input-unit">Unité de conversion</label> -->
+                            <!-- </div> -->
+                        </div>
+                    </div>
+                    <div class="col-lg-6 border-start border-info">
+                        <h5 class="mb-3 text-primary">Sortie</h5>
+                        <div class="form-group mb-3">
+                            <div class="form-floating">
+                                <input type="text" readonly class="form-control" id="output" placeholder="Valeur à convertir">
+                                <label class="text-primary" for="output">Valeur convertie</label>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <!-- <div class="form-floating"> -->
+                                <select required name="" id="output-unit" class="form-select options">
+                                    <option value=""> Unité de conversion </option>
+                                </select>
+                                <!-- <label class="text-primary" for="output-unit">Unité de conversion</label> -->
+                            <!-- </div> -->
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center my-4">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-4">Convertir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js" integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        const CURR_API_KEY = "574af83f13e471e7dc492714"
+        
+        const TYPES = {
+            "refreshBases":"Codage",
+            "refreshCurrencies":"Devises",
+            "refreshMeters":"Mesures"
+        }
+        
+        const METER_UNITS = [
+                {
+                    "short":"KM",
+                    "text":"Kilomètre",
+                    "id": 1000
+                },
+                {
+                    "short":"HM",
+                    "text":"Hectomètre",
+                    "id": 100
+                },
+                {
+                    "short":"DAM",
+                    "text":"Décamètre",
+                    "id": 10
+                },
+                {
+                    "short":"M",
+                    "text":"Mètre",
+                    "id": 1
+                },
+                {
+                    "short":"DM",
+                    "text":"Décimètre",
+                    "id": 0.1
+                },
+                {
+                    "short":"CM",
+                    "text":"Centimètre",
+                    "id": 0.01
+                },
+                {
+                    "short":"MM",
+                    "text":"Millimètre",
+                    "id": 0.001
+                }
+            ]
+            
+        const BASES = [
+            {
+                "id":"2",
+                "text":"Binaire"
+            },
+            {
+                "id":"8",
+                "text":"Octale"
+            },
+            {
+                "id":"10",
+                "text":"Décimale"
+            },
+            {
+                "id":"16",
+                "text":"Hexadécimale"
+            }
+        ]
+        
+        function refreshMeters(){
+            setup()
+            $('.options').select2({
+                data: METER_UNITS,
+                placeholder:"Select une unité"
+            })        
+
+            onSubmit(function(){
+                let number = $('#input').val()
+                let from = $('#input-unit').val()
+                let to = $('#output-unit').val()
+                let converted = number * from / to
+                $('#output').val(converted)
+            })
+        }
+
+        function refreshBases(){
+            setup()
+            $("#input-unit").change(function (e) { 
+                if($(this).val() > 10){
+                    $('#input').attr('type','text')
+                }else{
+                    $('#input').attr('type','number')
+                }
+            });
+
+            $('.options').select2({
+                data: BASES,
+                placeholder:"Selectionnez une base de conversion"
+            })
+            onSubmit(function(){
+                $('#input').removeClass('is-invalid')
+                $('#input').parent().find('label').removeClass('text-danger')
+                let number = $('#input').val()
+                let from = $('#input-unit').val()
+                let to = $('#output-unit').val()
+                try {
+                    let converted = decimalToX(xToDecimal(number, from), to)
+                    $('#output').val(converted)
+                    $('#output').addClass('is-valid')
+                    $('#output').focus()
+                    $('#output').addClass('border-success-subtle')
+                    $('#output').parent().find('label').addClass('text-success')
+                    setTimeout(() => {
+                        $('#output').removeClass('is-valid')
+                        $('#output').removeClass('border-success-subtle')
+                        $('#output').parent().find('label').removeClass('text-success')
+                    }, 2000);
+                } catch (error) {
+                    $('#input').addClass('is-invalid')
+                    $('#input').parent().find('label').addClass('text-danger')
+                    alert(number+" n'est pas dans la base "+from)
+                }
+            })
+        }
+
+        function refreshCurrencies(){
+            setup()
+            let url = `https://v6.exchangerate-api.com/v6/${CURR_API_KEY}/codes`
+            let paramValue = ""
+            $.get(url, function(data, textStatus, jqXHR) {
+                    $('.options').select2({
+                        ajax: {
+                            url: url,
+                            data: function (params) {
+                                paramValue = params.term || ""
+                                // return null;
+                            },
+                            dataType: 'json',
+                            processResults: function (data) {
+                                let results = []
+                                data.supported_codes.forEach(function(curr) {
+                                    if(curr[1].toLowerCase().indexOf(paramValue.toLowerCase()) !== -1 || curr[0].toLowerCase().indexOf(paramValue.toLowerCase()) !== -1){
+                                        results.push({
+                                            id: curr[0],
+                                            text: curr[1]
+                                        })
+                                    }
+                                });
+                                return {
+                                    results: results
+                                };
+                            },
+                            "pagination":{
+                                "more": false
+                            }
+                            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+                        },
+                        placeholder:"Selectionnez une devise"
+                    })
+                
+                    onSubmit(()=>{                        
+                        let number = $('#input').val()
+                        let from = $('#input-unit').val()
+                        let to = $('#output-unit').val()
+                        let url = `https://v6.exchangerate-api.com/v6/${CURR_API_KEY}/pair/${from}/${to}`
+                        $.get(url, function(data, textStatus, jqXHR) {
+                                let converted = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2 }).format(data.conversion_rate * number);
+                                $('#output').val(converted)
+                            },
+                            "json"
+                        ).fail(function(xhr, status, error) {
+                            console.log(error, xhr, status)
+                        })
+                    })
+                },
+                "json"
+            ).fail(function(xhr, status, error) {
+                console.log(error, xhr, status)
+            })
+        }
+
+        
+        function decimalToX(decimal, to_base) {
+            let result = '';
+
+            // Convertir le nombre décimal en la base donnée
+            while (decimal > 0) {
+                let remainder = decimal % to_base;
+                result = remainder.toString() + result;
+                decimal = Math.floor(decimal / to_base);
+            }
+
+            return result;
+        }
+
+
+        function xToDecimal(number, from_base) {
+            let decimal = 0;
+            let power = 1;
+
+            // Convertir le number en décimal
+            for (let i = number.length - 1; i >= 0; i--) {
+                let digit;
+
+                if (isNaN(parseInt(number[i]))) {
+                    digit = number[i].charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+                } else {
+                    digit = parseInt(number[i]);
+                    if(digit >= from_base){
+                        throw('Base error')
+                    }
+                }
+
+                decimal += digit * power;
+                power *= from_base;
+            }
+
+            return decimal;
+        }
+
+
+        $('#conversion-type').change(function (e) { 
+            e.preventDefault();
+            let f = $(this).val()
+            window[f]()
+        });
+        for (const val in TYPES) {
+            let type = TYPES[val] 
+            let opt = document.createElement('option')
+            $(opt).text(type)
+            $(opt).attr("value", val)
+            $('#conversion-type').append(opt)
+        }
+        $('#conversion-type').trigger("change")
+
+
+        function setup(){
+            $('#input-unit').off("change")
+            $('.options').empty()
+            // $('.options').trigger("change")
+        }
+
+        function onSubmit(callback){
+            $("#form-converter").off('submit')
+            $("#form-converter").submit(function (e) { 
+                e.preventDefault()
+                callback()
+            })
+        }
+
+    </script>
+</body>
+</html>
