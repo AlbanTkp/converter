@@ -178,10 +178,22 @@
                 let from = $('#input-unit').val()
                 let to = $('#output-unit').val()
                 let converted = number * from / to
-                $('#output').val(converted)
+                setOutput(converted)
             })
         }
 
+        function setOutput(converted){
+            $('#output').val(converted)
+            $('#output').addClass('is-valid')
+            $('#output').focus()
+            $('#output').addClass('border-success-subtle')
+            $('#output').parent().find('label').addClass('text-success')
+            setTimeout(() => {
+                $('#output').removeClass('is-valid')
+                $('#output').removeClass('border-success-subtle')
+                $('#output').parent().find('label').removeClass('text-success')
+            }, 2000);
+        }
         function refreshBases(){
             setup()
             $("#input-unit").change(function (e) { 
@@ -208,16 +220,7 @@
                     if(isNaN(converted)){
                         throw(number+" n'est pas dans la base "+from)
                     }
-                    $('#output').val(converted)
-                    $('#output').addClass('is-valid')
-                    $('#output').focus()
-                    $('#output').addClass('border-success-subtle')
-                    $('#output').parent().find('label').addClass('text-success')
-                    setTimeout(() => {
-                        $('#output').removeClass('is-valid')
-                        $('#output').removeClass('border-success-subtle')
-                        $('#output').parent().find('label').removeClass('text-success')
-                    }, 2000);
+                    setOutput(converted)
                 } catch (error) {
                     $('#input').addClass('is-invalid')
                     $('#input').parent().find('label').addClass('text-danger')
@@ -270,7 +273,7 @@
                         let url = `https://v6.exchangerate-api.com/v6/${CURR_API_KEY}/pair/${from}/${to}`
                         $.get(url, function(data, textStatus, jqXHR) {
                                 let converted = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2 }).format(data.conversion_rate * number);
-                                $('#output').val(converted)
+                                setOutput(converted)
                             },
                             "json"
                         ).fail(function(xhr, status, error) {
