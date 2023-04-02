@@ -206,7 +206,7 @@
                 try {
                     let converted = fromBaseXToBaseY(number, from, to)
                     if(isNaN(converted)){
-                        throw('')
+                        throw(number+" n'est pas dans la base "+from)
                     }
                     $('#output').val(converted)
                     $('#output').addClass('is-valid')
@@ -222,7 +222,7 @@
                     $('#input').addClass('is-invalid')
                     $('#input').parent().find('label').addClass('text-danger')
                     $('#input').trigger('invalid')
-                    alert(number+" n'est pas dans la base "+from)
+                    alert(error)
                 }
             })
         }
@@ -286,6 +286,13 @@
         
 
         function fromBaseXToBaseY(number, fromBase, toBase) {
+            for (let i = 0; i < number.length; i++) {
+                const digit = number[i];
+                if(!isNaN(digit) && digit >= fromBase){
+                    throw(digit+" n'est pas dans la base "+fromBase)
+                }
+            }
+            
             // Convertir le nombre en base 10
             var base10Number = parseInt(number, fromBase);
             
