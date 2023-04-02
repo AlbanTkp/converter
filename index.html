@@ -21,6 +21,9 @@
             border-top-left-radius: 1rem !important;
             border-top-right-radius: 1rem !important;
         }
+        body{
+            font-family: 'Times New Roman', Times, serif;
+        }
     </style>
 </head>
 <body class="p-5 bg-secondary bg-opacity-75">
@@ -28,20 +31,29 @@
         <div class="card-header p-3 text-white bg-primary bg-opacity-75">
             <h4 class="card-title">Interface de conversion</h4>
         </div>
-        <div class="card-body p-5 pb-0">
+        <div class="card-body p-5 pt-2 pb-0">
+            <h5 class="card-title text-muted mb-3">Cette interface vous permet de faire vos conversions de différents types: 
+            <ul class="fst-italic">
+                    <li>Codage(fcfa, dollars, euros, etc.)</li>
+                    <li>Devise(decimal, binaire, etc)</li>
+                    <li>Mesures(cm, m, km, etc)</li>
+                </ul>
+            </h5>
             <form id="form-converter">
+                <hr class="border-primary d-lg-block d-none">
                 <div class="row gx-5">
-                    <div class="col-lg-6 border-end">
-                        <h5 class="mb-3 text-primary">Entrée</h5>
+                    <div class="border-top border-info d-lg-none"></div>
+                    <div class="col-lg-6 border-end border-info py-4 py-lg-0">
+                        <h5 class="mb-3 text-uppercase fw-bold text-primary">Entrée</h5>
                         <div class="form-group mb-3">
                             <div class="form-floating">
-                                <input type="number" min="1" required class="form-control" id="input" placeholder="Valeur à convertir">
+                                <input type="number" min="1" title="Valeur à convertir" required class="form-control" id="input" placeholder="Valeur à convertir">
                                 <label class="text-primary" for="input">Valeur à convertir</label>
                             </div>
                         </div>
                         <div class="form-group mb-3">
                             <div class="form-floating">
-                                <select required name="" id="conversion-type" class="form-select">
+                                <select required name="" title="Type de conversion" id="conversion-type" class="form-select">
                                     <!-- <option value=""> Type de conversion </option> -->
                                 </select>
                                 <label class="text-primary" for="conversion-type">Type de conversion</label>
@@ -49,32 +61,33 @@
                         </div>
                         <div class="form-group mb-3">
                             <!-- <div class="form-floating"> -->
-                                <select required name="" id="input-unit" class="form-select options">
-                                    <option value=""> Unité de conversion </option>
+                                <select required name="" title="Unité de conversion d'entrée" id="input-unit" class="form-select options">
                                 </select>
                                 <!-- <label class="text-primary" for="input-unit">Unité de conversion</label> -->
                             <!-- </div> -->
                         </div>
                     </div>
-                    <div class="col-lg-6 border-start border-info">
-                        <h5 class="mb-3 text-primary">Sortie</h5>
+                    <div class="border-top border-info d-lg-none"></div>
+                    <div class="col-lg-6 border-start border-info py-4 py-lg-0">
+                        <h5 class="mb-3 text-uppercase fw-bold text-primary">Sortie</h5>
                         <div class="form-group mb-3">
                             <div class="form-floating">
-                                <input type="text" readonly class="form-control" id="output" placeholder="Valeur à convertir">
+                                <input type="text" readonly class="form-control fw-bold" id="output" placeholder="Valeur à convertir">
                                 <label class="text-primary" for="output">Valeur convertie</label>
                             </div>
                         </div>
                         <div class="form-group mb-3">
                             <!-- <div class="form-floating"> -->
-                                <select required name="" id="output-unit" class="form-select options">
+                                <select required name="" title="Unité de conversion de sortie" id="output-unit" class="form-select options">
                                     <option value=""> Unité de conversion </option>
                                 </select>
                                 <!-- <label class="text-primary" for="output-unit">Unité de conversion</label> -->
                             <!-- </div> -->
                         </div>
                     </div>
+                    <div class="border-top border-info d-lg-none"></div>
                 </div>
-                <hr class="border-primary">
+                <hr class="border-primary d-lg-block d-none">
                 <div class="text-center my-4">
                     <button type="submit" class="btn btn-default text-white btn-lg w-100 rounded-4 bg-primary bg-opacity-75">Convertir</button>
                 </div>
@@ -208,6 +221,7 @@
                 } catch (error) {
                     $('#input').addClass('is-invalid')
                     $('#input').parent().find('label').addClass('text-danger')
+                    $('#input').trigger('invalid')
                     alert(number+" n'est pas dans la base "+from)
                 }
             })
