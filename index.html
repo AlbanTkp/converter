@@ -74,9 +74,9 @@
                         </div>
                     </div>
                 </div>
-                <hr>
+                <hr class="border-primary">
                 <div class="text-center my-4">
-                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-4">Convertir</button>
+                    <button type="submit" class="btn btn-default text-white btn-lg w-100 rounded-4 bg-primary bg-opacity-75">Convertir</button>
                 </div>
             </form>
         </div>
@@ -150,12 +150,15 @@
             }
         ]
         
+        let select2_params = {}
+
         function refreshMeters(){
             setup()
-            $('.options').select2({
+            select2_params = {
                 data: METER_UNITS,
                 placeholder:"Select une unité"
-            })        
+            }
+            initSelect2()
 
             onSubmit(function(){
                 let number = $('#input').val()
@@ -176,10 +179,11 @@
                 }
             });
 
-            $('.options').select2({
+            select2_params = {
                 data: BASES,
                 placeholder:"Selectionnez une base de conversion"
-            })
+            }
+            initSelect2()
             onSubmit(function(){
                 $('#input').removeClass('is-invalid')
                 $('#input').parent().find('label').removeClass('text-danger')
@@ -187,7 +191,10 @@
                 let from = $('#input-unit').val()
                 let to = $('#output-unit').val()
                 try {
-                    let converted = decimalToX(xToDecimal(number, from), to)
+                    let converted = fromBaseXToBaseY(number, from, to)
+                    if(isNaN(converted)){
+                        throw('')
+                    }
                     $('#output').val(converted)
                     $('#output').addClass('is-valid')
                     $('#output').focus()
@@ -211,7 +218,7 @@
             let url = `https://v6.exchangerate-api.com/v6/${CURR_API_KEY}/codes`
             let paramValue = ""
             $.get(url, function(data, textStatus, jqXHR) {
-                    $('.options').select2({
+                    select2_params = {
                         ajax: {
                             url: url,
                             data: function (params) {
@@ -239,7 +246,8 @@
                             // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
                         },
                         placeholder:"Selectionnez une devise"
-                    })
+                    }
+                    initSelect2()
                 
                     onSubmit(()=>{                        
                         let number = $('#input').val()
@@ -261,46 +269,18 @@
                 console.log(error, xhr, status)
             })
         }
-
         
-        function decimalToX(decimal, to_base) {
-            let result = '';
 
-            // Convertir le nombre décimal en la base donnée
-            while (decimal > 0) {
-                let remainder = decimal % to_base;
-                result = remainder.toString() + result;
-                decimal = Math.floor(decimal / to_base);
-            }
-
+        function fromBaseXToBaseY(number, fromBase, toBase) {
+            // Convertir le nombre en base 10
+            var base10Number = parseInt(number, fromBase);
+            
+            // Convertir le nombre en base Y
+            var result = base10Number.toString(toBase);
+            
+            // Renvoyer le résultat
             return result;
         }
-
-
-        function xToDecimal(number, from_base) {
-            let decimal = 0;
-            let power = 1;
-
-            // Convertir le number en décimal
-            for (let i = number.length - 1; i >= 0; i--) {
-                let digit;
-
-                if (isNaN(parseInt(number[i]))) {
-                    digit = number[i].charCodeAt(0) - 'A'.charCodeAt(0) + 10;
-                } else {
-                    digit = parseInt(number[i]);
-                    if(digit >= from_base){
-                        throw('Base error')
-                    }
-                }
-
-                decimal += digit * power;
-                power *= from_base;
-            }
-
-            return decimal;
-        }
-
 
         $('#conversion-type').change(function (e) { 
             e.preventDefault();
@@ -329,6 +309,18 @@
                 e.preventDefault()
                 callback()
             })
+        }
+        $(window).on('resize', function() {
+            initSelect2()
+        });
+
+        function initSelect2(){
+            try {
+                $('.options').select2('destroy')
+            } catch (error) {
+                
+            }
+            $('.options').select2(select2_params)
         }
 
     </script>
