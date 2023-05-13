@@ -217,7 +217,7 @@
                 let to = $('#output-unit').val()
                 try {
                     let converted = fromBaseXToBaseY(number, from, to)
-                    if(isNaN(converted)){
+                    if(converted == "NaN"){
                         throw(number+" n'est pas dans la base "+from)
                     }
                     setOutput(converted)
@@ -289,6 +289,7 @@
         
 
         function fromBaseXToBaseY(number, fromBase, toBase) {
+            // console.log(number, fromBase, toBase);
             for (let i = 0; i < number.length; i++) {
                 const digit = number[i];
                 if(!isNaN(digit) && digit >= fromBase){
@@ -301,6 +302,7 @@
             
             // Convertir le nombre en base Y
             var result = base10Number.toString(toBase);
+            // console.log(base10Number, result);
             
             // Renvoyer le résultat
             return result;
