@@ -292,7 +292,7 @@
             // console.log(number, fromBase, toBase);
             for (let i = 0; i < number.length; i++) {
                 const digit = number[i];
-                if(!isNaN(digit) && digit >= fromBase){
+                if(!isNaN(digit) && digit >= parseInt(fromBase)){
                     throw(digit+" n'est pas dans la base "+fromBase)
                 }
             }
